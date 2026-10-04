@@ -1,0 +1,50 @@
+plugins {
+    id 'base'
+    id 'maven-publish'
+}
+
+group = 'com.appdiscoverysdk'
+version = project.hasProperty('version') && project.version != 'unspecified' ? project.version : '1.0.0'
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = project.hasProperty('group') ? project.group : 'com.appdiscoverysdk'
+            artifactId = 'appdiscovery-android'
+            version = project.version
+
+            artifact(file("appdiscovery-android-release.aar")) {
+                extension = 'aar'
+            }
+
+            pom {
+                packaging = 'aar'
+                name = 'AppDiscovery SDK for Android'
+                description = 'Offerwall SDK for Android.'
+                url = 'https://github.com/appdiscoverysdk/appdiscovery-android'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+            }
+
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+
+                def coreKtx = dependenciesNode.appendNode('dependency')
+                coreKtx.appendNode('groupId', 'androidx.core')
+                coreKtx.appendNode('artifactId', 'core-ktx')
+                coreKtx.appendNode('version', '1.10.1')
+                coreKtx.appendNode('scope', 'runtime')
+
+                def playServicesAds = dependenciesNode.appendNode('dependency')
+                playServicesAds.appendNode('groupId', 'com.google.android.gms')
+                playServicesAds.appendNode('artifactId', 'play-services-ads-identifier')
+                playServicesAds.appendNode('version', '18.2.0')
+                playServicesAds.appendNode('scope', 'runtime')
+            }
+        }
+    }
+}
